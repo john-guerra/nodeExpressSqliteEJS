@@ -8,24 +8,36 @@ router.get("/", async function (req, res, next) {
   res.redirect("/references");
 });
 
-router.get("/references", async (req, res) => {
+router.get("/references", async (req, res, next) => {
+
   const query = req.query.q || "";
+  const msg = req.query.msg || null;
+  try {
 
-  const references = await myDb.getReferences(query);
+    let references = await myDb.getReferences(query);
+    res.render("./pages/index", { references, query,  msg });
 
+  } catch (err) {
+    next(err);
+  }
 
-  res.render("./pages/index", { references, query });
 });
 
 
-router.post("/createReference", async (req, res) => {
+router.post("/createReference", async (req, res, next) => {
   const ref = req.body;
 
-  const insertRes = await myDb.insertReference(ref);
+  try {
 
-  console.log("Inserted", insertRes);
+    const insertRes = await myDb.insertReference(ref);
 
-  res.redirect("/references");
+    console.log("Inserted", insertRes);
+    res.redirect("/references/?msg=Inserted");
+  } catch (err) {
+    console.log("Error inserting", err);
+    next(err);
+
+  }
 });
 
 module.exports = router;

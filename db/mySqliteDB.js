@@ -23,10 +23,13 @@ async function insertReference(ref) {
     driver: sqlite3.Database,
   });
 
-  const stmt = await db.prepare(`INSERT INTO Reference(title, published_on)
+  const stmt = await db.prepare(`INSERT INTO
+    Reference(title, published_on)
     VALUES (@title, @published_on);`);
 
-  return stmt.run({ "@title": ref.title, "@published_on": ref.published_on });
+  return stmt.run({ "@title": ref.title,
+    "@published_on": ref.published_on
+  });
 }
 
 module.exports.getReferences = getReferences;

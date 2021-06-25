@@ -5,6 +5,14 @@
     <div class="container">
       <h1>Reference Manager</h1>
 
+
+      <% if (msg) { %>
+        <div class="alert">
+          <%= msg %>
+        </div>
+      <% } %>
+
+
       <div class="row">
         <div class="col-8">
           <%- include("../components/searchBar.ejs", { query }) %>
