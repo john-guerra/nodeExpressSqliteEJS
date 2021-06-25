@@ -5,9 +5,16 @@
     <div class="container">
       <h1>Reference Manager</h1>
 
-      <%- include("../components/searchBar.ejs", { query }) %>
+      <div class="row">
+        <div class="col-8">
+          <%- include("../components/searchBar.ejs", { query }) %>
+          <%- include("../components/referencesList.ejs", { references }) %>
+        </div>
+        <div class="col-4">
+          <%- include("../components/formCreateReference.ejs") %>
+        </div>
+      </div>
 
-      <%- include("../components/referencesList.ejs", { references }) %>
     </div>
 
     <%- include("../templates/footer.ejs") %>

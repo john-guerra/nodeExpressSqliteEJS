@@ -12,9 +12,20 @@ router.get("/references", async (req, res) => {
   const query = req.query.q || "";
 
   const references = await myDb.getReferences(query);
-  console.log("got references", references);
 
-  res.render("./pages/index", { references , query});
+
+  res.render("./pages/index", { references, query });
+});
+
+
+router.post("/createReference", async (req, res) => {
+  const ref = req.body;
+
+  const insertRes = await myDb.insertReference(ref);
+
+  console.log("Inserted", insertRes);
+
+  res.redirect("/references");
 });
 
 module.exports = router;
