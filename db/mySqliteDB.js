@@ -4,19 +4,23 @@ const { open } = require("sqlite");
 
 
 
-async function getReferences() {
+async function getReferences(query) {
+  console.log("getReferences", query);
+
   const db = await open({
     filename: "./db/database.db",
     driver: sqlite3.Database,
   });
 
-
-  return db.all(`SELECT * FROM Reference
+  const stmt = await db.prepare(`SELECT * FROM Reference
+    WHERE title LIKE @query
     ORDER BY created_on
     DESC LIMIT 10;`);
+
+  return stmt.all({"@query": query + "%"});
 }
 
-
+// title starts with "John"
 
 module.exports.getReferences = getReferences;
 
