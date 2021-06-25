@@ -1,0 +1,13 @@
+<h2>References</h2>
+<div class="row">
+  <% for (let ref of references) { %>
+  <div class="card col-4 p-1">
+    <h5 class="card-title"><%= ref.title %></h5>
+    <div class="card-text">
+      <div><%= ref.published_on %></div>
+      <div><%= ref.citations %> Citations</div>
+    </div>
+  </div>
+
+  <% } %>
+</div>
