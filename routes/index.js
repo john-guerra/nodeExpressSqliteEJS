@@ -5,8 +5,11 @@ const myDb = require("../db/mySqliteDB.js");
 
 
 /* GET home page. */
-router.get("/", function (req, res, next) {
-  res.render("index", { title: "Express" });
+router.get("/", async function (req, res, next) {
+  const references = await myDb.getReferences();
+  console.log("got references" , references);
+
+  res.render("./pages/index", { references });
 });
 
 router.get("/references", async (req, res) => {

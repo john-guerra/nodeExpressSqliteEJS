@@ -11,7 +11,9 @@ async function getReferences() {
   });
 
 
-  return db.all("SELECT * FROM Reference ORDER BY created_on DESC LIMIT 10;");
+  return db.all(`SELECT * FROM Reference
+    ORDER BY created_on
+    DESC LIMIT 10;`);
 }
 
 
