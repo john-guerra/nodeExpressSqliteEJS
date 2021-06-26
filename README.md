@@ -19,3 +19,8 @@ npm start
 ```
 
 4) Point your browser to http://locahost:3000
+
+
+## Architecture
+
+<img src="./public/images/architecture.png" alt="Architecture of the Aplication"/>
