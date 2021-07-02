@@ -82,7 +82,6 @@ async function getReferenceByID(reference_id) {
   }
 }
 
-
 async function updateReferenceByID(reference_id, ref) {
   console.log("updateReferenceByID", reference_id, ref);
 
@@ -104,6 +103,32 @@ async function updateReferenceByID(reference_id, ref) {
     "@reference_id": reference_id,
     "@title": ref.title,
     "@published_on": ref.published_on,
+  };
+
+  try {
+    return await stmt.run(params);
+  } finally {
+    await stmt.finalize();
+    db.close();
+  }
+}
+
+async function deleteReferenceByID(reference_id) {
+  console.log("deleteReferenceByID", reference_id);
+
+  const db = await open({
+    filename: "./db/database.db",
+    driver: sqlite3.Database,
+  });
+
+  const stmt = await db.prepare(`
+    DELETE FROM Reference
+    WHERE
+       reference_id = @reference_id;
+    `);
+
+  const params = {
+    "@reference_id": reference_id,
   };
 
   try {
@@ -140,6 +165,4 @@ module.exports.getReferencesCount = getReferencesCount;
 module.exports.insertReference = insertReference;
 module.exports.getReferenceByID = getReferenceByID;
 module.exports.updateReferenceByID = updateReferenceByID;
-
-
-
+module.exports.deleteReferenceByID = deleteReferenceByID;

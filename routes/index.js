@@ -66,6 +66,25 @@ router.post("/references/:reference_id/edit", async (req, res, next) => {
   }
 });
 
+router.get("/references/:reference_id/delete", async (req, res, next) => {
+  const reference_id = req.params.reference_id;
+
+  try {
+
+    let deleteResult = await myDb.deleteReferenceByID(reference_id);
+    console.log("delete", deleteResult);
+
+    if (deleteResult && deleteResult.changes === 1) {
+      res.redirect("/references/?msg=Deleted");
+    } else {
+      res.redirect("/references/?msg=Error Deleting");
+    }
+
+  } catch (err) {
+    next(err);
+  }
+});
+
 router.post("/createReference", async (req, res, next) => {
   const ref = req.body;
 
