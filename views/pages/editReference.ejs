@@ -10,12 +10,14 @@
 
 
       <% if (msg) { %>
-        <div class="alert">
+        <div class="alert alert-primary">
           <%= msg %>
         </div>
       <% } %>
 
       <%- include("../components/formEditReference.ejs", { ref }) %>
+
+      <%- include("../components/authorList.ejs", { authors }) %>
 
 
     </div>

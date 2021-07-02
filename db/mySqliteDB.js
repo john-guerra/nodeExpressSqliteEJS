@@ -67,7 +67,7 @@ async function getReferenceByID(reference_id) {
 
   const stmt = await db.prepare(`
     SELECT * FROM Reference
-    WHERE reference_id LIKE @reference_id;
+    WHERE reference_id = @reference_id;
     `);
 
   const params = {
@@ -160,9 +160,68 @@ async function insertReference(ref) {
   }
 }
 
+
+async function getAuthorsByReferenceID(reference_id) {
+  console.log("getAuthorsByReferenceID", reference_id);
+
+  const db = await open({
+    filename: "./db/database.db",
+    driver: sqlite3.Database,
+  });
+
+  const stmt = await db.prepare(`
+    SELECT * FROM Reference_Author
+    NATURAL JOIN Author
+    WHERE reference_id = @reference_id;
+    `);
+
+  const params = {
+    "@reference_id": reference_id,
+  };
+
+  try {
+    return await stmt.all(params);
+  } finally {
+    await stmt.finalize();
+    db.close();
+  }
+}
+
+
+async function addAuthorIDToReferenceID(reference_id, author_id) {
+  console.log("addAuthorIDToReferenceID", reference_id, author_id);
+
+  const db = await open({
+    filename: "./db/database.db",
+    driver: sqlite3.Database,
+  });
+
+  const stmt = await db.prepare(`
+    INSERT INTO
+    Reference_Author(reference_id, author_id)
+    VALUES (@reference_id, @author_id);
+    `);
+
+  const params = {
+    "@reference_id": reference_id,
+    "@author_id": author_id,
+  };
+
+  try {
+    return await stmt.run(params);
+  } finally {
+    await stmt.finalize();
+    db.close();
+  }
+}
+
+
+
 module.exports.getReferences = getReferences;
 module.exports.getReferencesCount = getReferencesCount;
 module.exports.insertReference = insertReference;
 module.exports.getReferenceByID = getReferenceByID;
 module.exports.updateReferenceByID = updateReferenceByID;
 module.exports.deleteReferenceByID = deleteReferenceByID;
+module.exports.getAuthorsByReferenceID = getAuthorsByReferenceID;
+module.exports.addAuthorIDToReferenceID = addAuthorIDToReferenceID;

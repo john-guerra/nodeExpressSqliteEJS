@@ -37,8 +37,18 @@ router.get("/references/:reference_id/edit", async (req, res, next) => {
   try {
 
     let ref = await myDb.getReferenceByID(reference_id);
+    let authors = await myDb.getAuthorsByReferenceID(reference_id);
+
+    console.log("edit reference", {
+      ref,
+      authors,
+      msg,
+    });
+
+
     res.render("./pages/editReference", {
       ref,
+      authors,
       msg,
     });
   } catch (err) {
@@ -59,6 +69,27 @@ router.post("/references/:reference_id/edit", async (req, res, next) => {
       res.redirect("/references/?msg=Updated");
     } else {
       res.redirect("/references/?msg=Error Updating");
+    }
+
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.post("/references/:reference_id/addAuthor", async (req, res, next) => {
+  console.log("Add author", req.body);
+  const reference_id = req.params.reference_id;
+  const author_id = req.body.author_id;
+
+  try {
+
+    let updateResult = await myDb.addAuthorIDToReferenceID(reference_id, author_id);
+    console.log("addAuthorIDToReferenceID", updateResult);
+
+    if (updateResult && updateResult.changes === 1) {
+      res.redirect(`/references/${reference_id}/edit?msg=Author added`);
+    } else {
+      res.redirect(`/references/${reference_id}/edit?msg=Error adding author`);
     }
 
   } catch (err) {
