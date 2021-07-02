@@ -57,6 +57,63 @@ async function getReferencesCount(query) {
   }
 }
 
+async function getReferenceByID(reference_id) {
+  console.log("getReferenceByID", reference_id);
+
+  const db = await open({
+    filename: "./db/database.db",
+    driver: sqlite3.Database,
+  });
+
+  const stmt = await db.prepare(`
+    SELECT * FROM Reference
+    WHERE reference_id LIKE @reference_id;
+    `);
+
+  const params = {
+    "@reference_id": reference_id,
+  };
+
+  try {
+    return await stmt.get(params);
+  } finally {
+    await stmt.finalize();
+    db.close();
+  }
+}
+
+
+async function updateReferenceByID(reference_id, ref) {
+  console.log("updateReferenceByID", reference_id, ref);
+
+  const db = await open({
+    filename: "./db/database.db",
+    driver: sqlite3.Database,
+  });
+
+  const stmt = await db.prepare(`
+    UPDATE Reference
+    SET
+      title = @title,
+      published_on = @published_on
+    WHERE
+       reference_id = @reference_id;
+    `);
+
+  const params = {
+    "@reference_id": reference_id,
+    "@title": ref.title,
+    "@published_on": ref.published_on,
+  };
+
+  try {
+    return await stmt.run(params);
+  } finally {
+    await stmt.finalize();
+    db.close();
+  }
+}
+
 async function insertReference(ref) {
   const db = await open({
     filename: "./db/database.db",
@@ -81,5 +138,8 @@ async function insertReference(ref) {
 module.exports.getReferences = getReferences;
 module.exports.getReferencesCount = getReferencesCount;
 module.exports.insertReference = insertReference;
+module.exports.getReferenceByID = getReferenceByID;
+module.exports.updateReferenceByID = updateReferenceByID;
+
 
 

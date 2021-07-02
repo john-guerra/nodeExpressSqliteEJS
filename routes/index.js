@@ -29,6 +29,43 @@ router.get("/references", async (req, res, next) => {
   }
 });
 
+
+router.get("/references/:reference_id/edit", async (req, res, next) => {
+  const reference_id = req.params.reference_id;
+
+  const msg = req.query.msg || null;
+  try {
+
+    let ref = await myDb.getReferenceByID(reference_id);
+    res.render("./pages/editReference", {
+      ref,
+      msg,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.post("/references/:reference_id/edit", async (req, res, next) => {
+  const reference_id = req.params.reference_id;
+  const ref = req.body;
+
+  try {
+
+    let updateResult = await myDb.updateReferenceByID(reference_id, ref);
+    console.log("update", updateResult);
+
+    if (updateResult && updateResult.changes === 1) {
+      res.redirect("/references/?msg=Updated");
+    } else {
+      res.redirect("/references/?msg=Error Updating");
+    }
+
+  } catch (err) {
+    next(err);
+  }
+});
+
 router.post("/createReference", async (req, res, next) => {
   const ref = req.body;
 
