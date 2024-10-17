@@ -1,7 +1,7 @@
-const sqlite3 = require("sqlite3");
-const { open } = require("sqlite");
+import sqlite3 from "sqlite3";
+import { open } from "sqlite";
 
-async function getReferences(query, page, pageSize) {
+export async function getReferences(query, page, pageSize) {
   console.log("getReferences", query);
 
   const db = await open({
@@ -12,10 +12,10 @@ async function getReferences(query, page, pageSize) {
   const stmt = await db.prepare(`
     SELECT * FROM Reference
     WHERE title LIKE @query
-    ORDER BY created_on DESC
+    ORDER BY published_on DESC
     LIMIT @pageSize
     OFFSET @offset;
-    `);
+  `);
 
   const params = {
     "@query": query + "%",
@@ -31,7 +31,7 @@ async function getReferences(query, page, pageSize) {
   }
 }
 
-async function getReferencesCount(query) {
+export async function getReferencesCount(query) {
   console.log("getReferences", query);
 
   const db = await open({
@@ -43,7 +43,7 @@ async function getReferencesCount(query) {
     SELECT COUNT(*) AS count
     FROM Reference
     WHERE title LIKE @query;
-    `);
+  `);
 
   const params = {
     "@query": query + "%",
@@ -57,7 +57,7 @@ async function getReferencesCount(query) {
   }
 }
 
-async function getReferenceByID(reference_id) {
+export async function getReferenceByID(reference_id) {
   console.log("getReferenceByID", reference_id);
 
   const db = await open({
@@ -68,7 +68,7 @@ async function getReferenceByID(reference_id) {
   const stmt = await db.prepare(`
     SELECT * FROM Reference
     WHERE reference_id = @reference_id;
-    `);
+  `);
 
   const params = {
     "@reference_id": reference_id,
@@ -82,7 +82,7 @@ async function getReferenceByID(reference_id) {
   }
 }
 
-async function updateReferenceByID(reference_id, ref) {
+export async function updateReferenceByID(reference_id, ref) {
   console.log("updateReferenceByID", reference_id, ref);
 
   const db = await open({
@@ -96,8 +96,8 @@ async function updateReferenceByID(reference_id, ref) {
       title = @title,
       published_on = @published_on
     WHERE
-       reference_id = @reference_id;
-    `);
+      reference_id = @reference_id;
+  `);
 
   const params = {
     "@reference_id": reference_id,
@@ -113,7 +113,7 @@ async function updateReferenceByID(reference_id, ref) {
   }
 }
 
-async function deleteReferenceByID(reference_id) {
+export async function deleteReferenceByID(reference_id) {
   console.log("deleteReferenceByID", reference_id);
 
   const db = await open({
@@ -124,8 +124,8 @@ async function deleteReferenceByID(reference_id) {
   const stmt = await db.prepare(`
     DELETE FROM Reference
     WHERE
-       reference_id = @reference_id;
-    `);
+      reference_id = @reference_id;
+  `);
 
   const params = {
     "@reference_id": reference_id,
@@ -139,7 +139,7 @@ async function deleteReferenceByID(reference_id) {
   }
 }
 
-async function insertReference(ref) {
+export async function insertReference(ref) {
   const db = await open({
     filename: "./db/database.db",
     driver: sqlite3.Database,
@@ -160,8 +160,7 @@ async function insertReference(ref) {
   }
 }
 
-
-async function getAuthorsByReferenceID(reference_id) {
+export async function getAuthorsByReferenceID(reference_id) {
   console.log("getAuthorsByReferenceID", reference_id);
 
   const db = await open({
@@ -173,7 +172,7 @@ async function getAuthorsByReferenceID(reference_id) {
     SELECT * FROM Reference_Author
     NATURAL JOIN Author
     WHERE reference_id = @reference_id;
-    `);
+  `);
 
   const params = {
     "@reference_id": reference_id,
@@ -187,8 +186,7 @@ async function getAuthorsByReferenceID(reference_id) {
   }
 }
 
-
-async function addAuthorIDToReferenceID(reference_id, author_id) {
+export async function addAuthorIDToReferenceID(reference_id, author_id) {
   console.log("addAuthorIDToReferenceID", reference_id, author_id);
 
   const db = await open({
@@ -200,7 +198,7 @@ async function addAuthorIDToReferenceID(reference_id, author_id) {
     INSERT INTO
     Reference_Author(reference_id, author_id)
     VALUES (@reference_id, @author_id);
-    `);
+  `);
 
   const params = {
     "@reference_id": reference_id,
@@ -214,14 +212,3 @@ async function addAuthorIDToReferenceID(reference_id, author_id) {
     db.close();
   }
 }
-
-
-
-module.exports.getReferences = getReferences;
-module.exports.getReferencesCount = getReferencesCount;
-module.exports.insertReference = insertReference;
-module.exports.getReferenceByID = getReferenceByID;
-module.exports.updateReferenceByID = updateReferenceByID;
-module.exports.deleteReferenceByID = deleteReferenceByID;
-module.exports.getAuthorsByReferenceID = getAuthorsByReferenceID;
-module.exports.addAuthorIDToReferenceID = addAuthorIDToReferenceID;

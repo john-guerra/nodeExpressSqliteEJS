@@ -1,7 +1,7 @@
-const express = require("express");
-const router = express.Router();
+import express from "express";
+import * as myDb from "../db/mySqliteDB.js";
 
-const myDb = require("../db/mySqliteDB.js");
+const router = express.Router();
 
 /* GET home page. */
 router.get("/", async function (req, res, next) {
@@ -22,20 +22,17 @@ router.get("/references", async (req, res, next) => {
       query,
       msg,
       currentPage: page,
-      lastPage: Math.ceil(total/pageSize),
+      lastPage: Math.ceil(total / pageSize),
     });
   } catch (err) {
     next(err);
   }
 });
 
-
 router.get("/references/:reference_id/edit", async (req, res, next) => {
   const reference_id = req.params.reference_id;
-
   const msg = req.query.msg || null;
   try {
-
     let ref = await myDb.getReferenceByID(reference_id);
     let authors = await myDb.getAuthorsByReferenceID(reference_id);
 
@@ -44,7 +41,6 @@ router.get("/references/:reference_id/edit", async (req, res, next) => {
       authors,
       msg,
     });
-
 
     res.render("./pages/editReference", {
       ref,
@@ -61,7 +57,6 @@ router.post("/references/:reference_id/edit", async (req, res, next) => {
   const ref = req.body;
 
   try {
-
     let updateResult = await myDb.updateReferenceByID(reference_id, ref);
     console.log("update", updateResult);
 
@@ -70,7 +65,6 @@ router.post("/references/:reference_id/edit", async (req, res, next) => {
     } else {
       res.redirect("/references/?msg=Error Updating");
     }
-
   } catch (err) {
     next(err);
   }
@@ -82,7 +76,6 @@ router.post("/references/:reference_id/addAuthor", async (req, res, next) => {
   const author_id = req.body.author_id;
 
   try {
-
     let updateResult = await myDb.addAuthorIDToReferenceID(reference_id, author_id);
     console.log("addAuthorIDToReferenceID", updateResult);
 
@@ -91,7 +84,6 @@ router.post("/references/:reference_id/addAuthor", async (req, res, next) => {
     } else {
       res.redirect(`/references/${reference_id}/edit?msg=Error adding author`);
     }
-
   } catch (err) {
     next(err);
   }
@@ -101,7 +93,6 @@ router.get("/references/:reference_id/delete", async (req, res, next) => {
   const reference_id = req.params.reference_id;
 
   try {
-
     let deleteResult = await myDb.deleteReferenceByID(reference_id);
     console.log("delete", deleteResult);
 
@@ -110,7 +101,6 @@ router.get("/references/:reference_id/delete", async (req, res, next) => {
     } else {
       res.redirect("/references/?msg=Error Deleting");
     }
-
   } catch (err) {
     next(err);
   }
@@ -130,4 +120,4 @@ router.post("/createReference", async (req, res, next) => {
   }
 });
 
-module.exports = router;
+export default router;
