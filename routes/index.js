@@ -17,6 +17,8 @@ router.get("/references", async (req, res, next) => {
   try {
     let total = await myDb.getReferencesCount(query);
     let references = await myDb.getReferences(query, page, pageSize);
+
+
     res.render("./pages/index", {
       references,
       query,
@@ -119,5 +121,31 @@ router.post("/createReference", async (req, res, next) => {
     next(err);
   }
 });
+
+
+// http://localhost:3000/references?pageSize=24&page=3&q=John
+router.get("/authors", async (req, res, next) => {
+  const query = req.query.q || "";
+  const page = +req.query.page || 1;
+  const pageSize = +req.query.pageSize || 24;
+  const msg = req.query.msg || null;
+  try {
+    let total = await myDb.getAuthorsCount(query);
+    let authors = await myDb.getAuthors(query, page, pageSize);
+
+
+    res.render("./pages/index_authors", {
+      authors,
+      query,
+      msg,
+      currentPage: page,
+      lastPage: Math.ceil(total / pageSize),
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+
 
 export default router;

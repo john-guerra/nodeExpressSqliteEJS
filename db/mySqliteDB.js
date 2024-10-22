@@ -212,3 +212,63 @@ export async function addAuthorIDToReferenceID(reference_id, author_id) {
     db.close();
   }
 }
+
+export async function getAuthors(query, page, pageSize) {
+  console.log("getAuthors query", query);
+
+  const db = await open({
+    filename: "./db/database.db",
+    driver: sqlite3.Database,
+  });
+
+  const stmt = await db.prepare(`
+    SELECT * FROM Author
+    WHERE 
+      first_name LIKE @query OR 
+      last_name LIKE @query
+    ORDER BY last_name DESC
+    LIMIT @pageSize
+    OFFSET @offset;
+  `);
+
+  const params = {
+    "@query": query + "%",
+    "@pageSize": pageSize,
+    "@offset": (page - 1) * pageSize,
+  };
+
+  try {
+    return await stmt.all(params);
+  } finally {
+    await stmt.finalize();
+    db.close();
+  }
+}
+
+export async function getAuthorsCount(query) {
+  console.log("getAuthorsCount query", query);
+
+  const db = await open({
+    filename: "./db/database.db",
+    driver: sqlite3.Database,
+  });
+
+  const stmt = await db.prepare(`
+    SELECT COUNT(*) AS count
+    FROM Author
+    WHERE 
+      first_name LIKE @query OR 
+      last_name LIKE @query;
+  `);
+
+  const params = {
+    "@query": query + "%",
+  };
+
+  try {
+    return (await stmt.get(params)).count;
+  } finally {
+    await stmt.finalize();
+    db.close();
+  }
+}
